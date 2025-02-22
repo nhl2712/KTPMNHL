@@ -2,6 +2,6 @@
 {
     public class ApplicationSetting
     {
-        public string ApplicationTitle { get; set; }
+        public required string ApplicationTitle { get; set; }
     }
 }
