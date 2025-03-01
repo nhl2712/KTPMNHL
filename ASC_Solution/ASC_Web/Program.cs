@@ -1,8 +1,14 @@
+using ASC.DataAccess;
+using ASC.DataAccess.Interfaces;
+using ASC.Model.BaseData;
 using ASC_Web.Configuration;
 using ASC_Web.Data;
 using ASC_Web.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +18,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+builder.Services.AddIdentity<IdentityUser, IdentityRole>((options) =>
+{
+    options.User.RequireUniqueEmail = true;
+}).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+
+builder.Services.AddScoped<DbContext, ApplicationDbContext>();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddOptions();
@@ -21,7 +33,8 @@ builder.Services.AddControllersWithViews();
 // Add application services.
 builder.Services.AddTransient<IEmailSender, AuthMessageSender>();
 builder.Services.AddTransient<ISmsSender, AuthMessageSender>();
-
+builder.Services.AddSingleton<IIdentitySeed, IdentitySeed>();
+builder.Services.AddScoped<IUniOfWork, UnitOfWork>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
