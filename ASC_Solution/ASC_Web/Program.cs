@@ -24,11 +24,12 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>((options) =>
 }).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
 builder.Services.AddScoped<DbContext, ApplicationDbContext>();
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+//    .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddOptions();
 builder.Services.Configure<ApplicationSetting>(builder.Configuration.GetSection("Appsetting"));
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
 
 // Add application services.
 builder.Services.AddTransient<IEmailSender, AuthMessageSender>();
@@ -60,5 +61,14 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
+
+using (var scope = app.Services.CreateScope())
+{
+    var storage = scope.ServiceProvider.GetRequiredService<IIdentitySeed>();
+    await storage.Seed(
+        scope.ServiceProvider.GetService<UserManager<IdentityUser>>(),
+        scope.ServiceProvider.GetService<RoleManager<IdentityRole>>(),
+        scope.ServiceProvider.GetService<IOptions<ApplicationSetting>>());
+}
 
 app.Run();
