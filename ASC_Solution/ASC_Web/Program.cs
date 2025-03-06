@@ -7,6 +7,7 @@ using ASC_Web.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design.Internal;
 using Microsoft.Extensions.Options;
 
 
@@ -17,7 +18,8 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
+builder.Services.AddSession();
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddIdentity<IdentityUser, IdentityRole>((options) =>
 {
     options.User.RequireUniqueEmail = true;
@@ -51,6 +53,7 @@ else
 }
 
 app.UseHttpsRedirection();
+app.UseSession();
 app.UseStaticFiles();
 
 app.UseRouting();

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using ASC.Utilities;
 using ASC_Web.Configuration;
 using ASC_Web.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -16,9 +17,14 @@ namespace ASC_Web.Controllers
             _logger = logger;
             _settings = setting;
         }
-
+        public HomeController(IOptions<ApplicationSetting> setting)
+        {
+            _settings = setting;
+        }
         public IActionResult Index()
         {
+            HttpContext.Session.SetSession("Test", _settings.Value);
+            var settings = HttpContext.Session.GetSession<ApplicationSetting>("Test");
             ViewBag.Title = _settings.Value.ApplicationTitle;
             return View();
         }
