@@ -1,6 +1,8 @@
-﻿namespace ASC_Web.Controllers
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace ASC_Web.Controllers
 {
-    public class AnonymousController : BaseController
+    public class AnonymousController : Controller
     {
     }
 }

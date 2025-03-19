@@ -30,6 +30,7 @@ namespace ASC_Web.Services
         {
             // Add ApplicationDbContext
             services.AddScoped<DbContext, ApplicationDbContext>();
+            services.AddScoped<IIdentitySeed, IdentitySeed>();
 
             // Add IdentityUser IdentityRole
             services.AddIdentity<IdentityUser, IdentityRole>(options =>
@@ -51,7 +52,7 @@ namespace ASC_Web.Services
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddDistributedMemoryCache();
-            //services.AddSingleton<INavigationCacheOperations, NavigationCacheOperations>();
+            services.AddSingleton<INavigationCacheOperations, NavigationCacheOperations>();
 
             // Add RazorPages, MVC
             services.AddRazorPages();
