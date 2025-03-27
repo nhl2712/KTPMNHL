@@ -29,7 +29,7 @@
                 <a href="#!email"><span class="white-text email">@currentUser.Email</span></a>
             </div>
         </li>
-        @await Component.InvokeAsync("ASC.Web.Navigation.LeftNavigation", await navigationCache.GetNavigationCacheAsync())
+        @await Component.InvokeAsync("ASC_Web.Navigation.LeftNavigation", await navigationCache.GetNavigationCacheAsync())
     </ul>
     <form class="hide" method="post" id="logout_form" asp-area="Identity" asp-page="/Account/Logout">
         <input type="submit" value="Logout" />

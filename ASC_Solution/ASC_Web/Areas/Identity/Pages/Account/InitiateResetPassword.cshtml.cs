@@ -18,10 +18,7 @@ namespace ASC_Web.Areas.Identity.Pages.Account
             _userManager = userManager;
             _emailSender = emailSender;
         }
-
-
         public void OnGet() { }
-
         public async Task<IActionResult> OnPostAsync()
         {
             // Find User

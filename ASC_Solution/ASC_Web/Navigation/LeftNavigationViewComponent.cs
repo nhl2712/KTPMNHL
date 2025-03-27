@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ASC_Web.Navigation
 {
-    [ViewComponent(Name = "ASC.Web.Navigation.LeftNavigation")]
+    [ViewComponent(Name = "ASC_Web.Navigation.LeftNavigation")]
     public class LeftNavigationViewComponent : ViewComponent
     {
         public IViewComponentResult Invoke(NavigationMenu menu)
