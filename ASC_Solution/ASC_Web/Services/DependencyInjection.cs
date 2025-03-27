@@ -2,10 +2,10 @@
 using ASC.DataAccess;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using ASC.Model.BaseData;
 using ASC_Web.Configuration;
 using ASC_Web.Data;
 using ASC_Web.Services;
-using ASC.Model.BaseData;
 
 namespace ASC_Web.Services
 {
@@ -21,7 +21,7 @@ namespace ASC_Web.Services
 
             // Add Options and get data from appsettings.json with "AppSettings"
             services.AddOptions(); // IOption
-            services.Configure<ApplicationSetting>(config.GetSection("Appsetting"));
+            services.Configure<ApplicationSetting>(config.GetSection("AppSetting"));
 
             return services;
         }
@@ -30,7 +30,6 @@ namespace ASC_Web.Services
         {
             // Add ApplicationDbContext
             services.AddScoped<DbContext, ApplicationDbContext>();
-            services.AddScoped<IIdentitySeed, IdentitySeed>();
 
             // Add IdentityUser IdentityRole
             services.AddIdentity<IdentityUser, IdentityRole>(options =>

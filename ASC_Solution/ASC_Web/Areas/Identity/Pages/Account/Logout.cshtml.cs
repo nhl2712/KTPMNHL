@@ -16,20 +16,23 @@ namespace ASC_Web.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class LogoutModel : PageModel
     {
-        private readonly SignInManager<IdentityApplicationUser> _signInManager;
-        private readonly ILogger<LogoutModel> _logger;
+        //private readonly SignInManager<ApplicationUser> _signInManager;
+        //private readonly ILogger<LogoutModel> _logger;
 
-        public LogoutModel(SignInManager<IdentityApplicationUser> signInManager, ILogger<LogoutModel> logger)
-        {
-            _signInManager = signInManager;
-            _logger = logger;
-        }
+        //public LogoutModel(SignInManager<ApplicationUser> signInManager, ILogger<LogoutModel> logger)
+        //{
+        //    _signInManager = signInManager;
+        //    _logger = logger;
+        //}
 
-        public async Task<IActionResult> OnPost(string returnUrl = null)
+        //public async Task<IActionResult> OnPost(string returnUrl = null)
+        //{
+        //    await _signInManager.SignOutAsync();
+        //    _logger.LogInformation("User logged out.");
+        //    return RedirectToPage("/Home/Index");
+        //}
+        public void OnGet()
         {
-            await _signInManager.SignOutAsync();
-            _logger.LogInformation("User logged out.");
-            return RedirectToPage("/Home/Index");
         }
     }
 }
