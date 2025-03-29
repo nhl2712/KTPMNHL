@@ -15,4 +15,5 @@
         public List<string> UserRoles { get; set; }
         public List<NavigationMenuItem> NestedItems { get; set; }
     }
+
 }
