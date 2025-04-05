@@ -36,4 +36,8 @@
     <ProjectReference Include="..\ASC.Utilities\ASC.Utilities.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Areas\Accounts\Data\" />
+  </ItemGroup>
+
 </Project>
