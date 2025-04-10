@@ -23,6 +23,13 @@ namespace ASC_Web.Services
             services.AddOptions(); // IOption
             services.Configure<ApplicationSetting>(config.GetSection("AppSetting"));
 
+            services.AddAuthentication().AddGoogle(options =>
+            {
+                IConfigurationSection googleAuthNSection = config.GetSection("Authentication:Google");
+                options.ClientId = config["Google:Identity:ClientId"];
+                options.ClientSecret = config["Google:Identity:ClientSecret"];
+            });
+
             return services;
         }
         // Add service

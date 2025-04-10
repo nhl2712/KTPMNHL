@@ -118,7 +118,7 @@ footer.page-footer {
     cursor: pointer;
 }
 
-padding-left-20px { /* Note: This selector is likely missing a leading dot (.) to be a class */
+.padding-left-20px {
     padding-left: 20px;
 }
 
@@ -126,10 +126,10 @@ padding-left-20px { /* Note: This selector is likely missing a leading dot (.) t
     padding-right: 20px;
 }
 
-.margin-top-50px { /* Duplicate definition */
+.margin-top-50px {
     margin-top: 50px;
 }
 
-.margin-bottom-50px { /* Duplicate definition */
+.margin-bottom-50px {
     margin-bottom: 50px;
 }

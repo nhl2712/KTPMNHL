@@ -22,7 +22,7 @@ namespace ASC_Web.Areas.Accounts.Models
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
         public bool IsEdit { get; set; }
-        public string IsActive { get; set; }
+        public bool IsActive { get; set; }
 
     }
 }

@@ -43,24 +43,23 @@ namespace ASC_Web.Areas.Accounts.Controllers
                 Registration = new ServiceEngineerRegistrationViewModel() { IsEdit = false }
             });
         }
-
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ServiceEngineers(ServiceEngineerViewModel serviceEngineer)
         {
+            serviceEngineer.ServiceEngineers = HttpContext.Session.GetSession<List<IdentityUser>>("ServiceEngineers");
             if (!ModelState.IsValid)
             {
                 return View(serviceEngineer);
             }
-
             if (serviceEngineer.Registration.IsEdit)
             {
                 // Update User
                 var user = await _userManager.FindByEmailAsync(serviceEngineer.Registration.Email);
                 user.UserName = serviceEngineer.Registration.UserName;
                 IdentityResult result = await _userManager.UpdateAsync(user);
-                if (!result.Succeeded) // Sửa logic: hiển thị lỗi khi thất bại
+                if (!result.Succeeded)
                 {
                     result.Errors.ToList().ForEach(p => ModelState.AddModelError("", p.Description));
                     return View(serviceEngineer);
@@ -77,23 +76,10 @@ namespace ASC_Web.Areas.Accounts.Controllers
 
                 // Update claims
                 user = await _userManager.FindByEmailAsync(serviceEngineer.Registration.Email);
-                var claims = await _userManager.GetClaimsAsync(user); // Sửa: sử dụng _userManager.GetClaimsAsync
-                var isActiveClaim = claims.SingleOrDefault(p => p.Type == "IsActive"); // Sửa: sử dụng claims thay vì Identity
-                if (isActiveClaim != null) // Thêm kiểm tra null
-                {
-                    var removeClaimResult = await _userManager.RemoveClaimAsync(user, new System.Security.Claims.Claim(isActiveClaim.Type, isActiveClaim.Value));
-                    if (!removeClaimResult.Succeeded)
-                    {
-                        removeClaimResult.Errors.ToList().ForEach(p => ModelState.AddModelError("", p.Description));
-                        return View(serviceEngineer);
-                    }
-                }
-                var addClaimResult = await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("IsActive", serviceEngineer.Registration.IsActive.ToString()));
-                if (!addClaimResult.Succeeded)
-                {
-                    addClaimResult.Errors.ToList().ForEach(p => ModelState.AddModelError("", p.Description));
-                    return View(serviceEngineer);
-                }
+                var identity = await _userManager.GetClaimsAsync(user);
+                var isActiveClaim = identity.SingleOrDefault(p => p.Type == "IsActive");
+                var removeClaimResult = await _userManager.RemoveClaimAsync(user, new System.Security.Claims.Claim(isActiveClaim.Type, isActiveClaim.Value));
+                var addClaimResult = await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim(isActiveClaim.Type, serviceEngineer.Registration.IsActive.ToString()));
             }
             else
             {
@@ -109,29 +95,83 @@ namespace ASC_Web.Areas.Accounts.Controllers
                 await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("IsActive", serviceEngineer.Registration.IsActive.ToString()));
                 if (!result.Succeeded)
                 {
-                    result.Errors.ToList().ForEach(p => ModelState.AddModelError("", p.Description));
+                    result.Errors.ToList().ForEach(p => ModelState.AddModelError("",
+                        p.Description));
                     return View(serviceEngineer);
                 }
-
                 // Assign user to Engineer Role
                 var roleResult = await _userManager.AddToRoleAsync(user, Roles.Engineer.ToString());
                 if (!roleResult.Succeeded)
                 {
-                    roleResult.Errors.ToList().ForEach(p => ModelState.AddModelError("", p.Description));
+                    roleResult.Errors.ToList().ForEach(p => ModelState.AddModelError("",
+                                     p.Description));
                     return View(serviceEngineer);
                 }
-
-                if (bool.TryParse(serviceEngineer.Registration.IsActive, out bool isActive) && isActive)
-                {
-                    await _emailSender.SendEmailAsync(serviceEngineer.Registration.Email, "Account Created/Modified", $"Account Created/Modified \n Password: {serviceEngineer.Registration.Password}");
-                }
-                else
-                {
-                    await _emailSender.SendEmailAsync(serviceEngineer.Registration.Email, "Account Deactivated", $"Your account has been deactivated.");
-                }
             }
-
+            if (serviceEngineer.Registration.IsActive)
+            {
+                await _emailSender.SendEmailAsync(serviceEngineer.Registration.Email, "Account Created/Modified",
+                    $"Email : {serviceEngineer.Registration.Email} /n Password : {serviceEngineer.Registration.Password}");
+            }
+            else
+            {
+                await _emailSender.SendEmailAsync(serviceEngineer.Registration.Email, "Account Deactivated", $"Your account has been deactivated.");
+            }
             return RedirectToAction("ServiceEngineers");
         }
+        [HttpGet]
+        public async Task<IActionResult> Customers()
+        {
+            var customers = await _userManager.GetUsersInRoleAsync(Roles.User.ToString());
+
+            // Hold all service engineers in session
+            HttpContext.Session.SetSession("Customers", customers);
+
+            return View(new CustomerViewModel
+            {
+                Customers = customers == null ? null : customers.ToList(),
+                Registration = new CustomerRegistrationViewModel() { IsEdit = false }
+            });
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Customers(CustomerViewModel customer)
+        {
+            customer.Customers = HttpContext.Session.GetSession<List<IdentityUser>>("Customers");
+
+            if (!ModelState.IsValid)
+            {
+                return View(customer);
+            }
+
+            if (customer.Registration.IsEdit)
+            {
+                // Update User
+                // Update claims IsActive
+                var user = await _userManager.FindByEmailAsync(customer.Registration.Email);
+                var identity = await _userManager.GetClaimsAsync(user);
+                var isActiveClaim = identity.SingleOrDefault(p => p.Type == "IsActive");
+
+                var removeClaimResult = await _userManager.RemoveClaimAsync(user,
+                    new System.Security.Claims.Claim(isActiveClaim.Type, isActiveClaim.Value));
+
+                var addClaimResult = await _userManager.AddClaimAsync(user,
+                    new System.Security.Claims.Claim(isActiveClaim.Type, customer.Registration.IsActive.ToString()));
+            }
+
+            if (customer.Registration.IsActive)
+            {
+                await _emailSender.SendEmailAsync(customer.Registration.Email,
+                    "Account Modified", $"Your account has been activated, Email : {customer.Registration.Email}");
+            }
+            else
+            {
+                await _emailSender.SendEmailAsync(customer.Registration.Email,
+                    "Account Deactivated", $"Your account has been deactivated.");
+            }
+
+            return RedirectToAction("Customers");
+        }
+
     }
 }
