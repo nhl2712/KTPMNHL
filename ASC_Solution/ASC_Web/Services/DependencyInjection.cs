@@ -6,6 +6,8 @@ using ASC.Model.BaseData;
 using ASC_Web.Configuration;
 using ASC_Web.Data;
 using ASC_Web.Services;
+using ASC.Business.Interfaces;
+using ASC.Business;
 
 namespace ASC_Web.Services
 {
@@ -52,7 +54,8 @@ namespace ASC_Web.Services
             services.AddSingleton<IIdentitySeed, IdentitySeed>();
             services.AddScoped<IUniOfWork, UnitOfWork>();
 
-
+            services.AddScoped<IMasterDataOperations, MasterDataOperations>();
+            services.AddAutoMapper(typeof(ApplicationDbContext));
             // Add Cache, Session
             services.AddSession();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -65,7 +68,14 @@ namespace ASC_Web.Services
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddControllersWithViews();
 
+            //....
+            services.AddControllersWithViews().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNamingPolicy = null;
+            });
+
             return services;
+
         }
 
     }
